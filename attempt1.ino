@@ -5,11 +5,11 @@ int micOut;
 
 void setup() {
   Serial.begin(9600);
-  Wire.begin(9);
-  Wire.onReceive(receiveEvent);
+  Wire.begin(9); //Start I2C as Salve on address 9
+  Wire.onReceive(receiveEvent); 
 }
 void receiveEvent(int bytes) {
-  x = Wire.read();
+  x = Wire.read(); //read from I2C
 }
 
 void loop() {
