@@ -5,11 +5,15 @@ int micOut;
 
 void setup() {
   Serial.begin(9600);
-
+  Wire.begin(9);
+  Wire.onReceive(receiveEvent);
+}
+void receiveEvent(int bytes) {
+  x = Wire.read();
 }
 
 void loop() {
-    if (Serial.available() > 0) {
+    if (x > 0) {
       char receivedChar = Serial.read();
       Serial.print("Received: ");
       Serial.println(receivedChar);
