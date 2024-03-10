@@ -7,43 +7,44 @@ import pyautogui
 import matplotlib.pyplot as plt
 import pandas as pd
 
-fd = os.popen(r'C:\Users\salar\Downloads\CoolTermWin64Bit\CoolTermWin64Bit\CoolTerm.exe')
+#open the application
+fd = os.open('C:\Users\salar\Downloads\CoolTermWin64Bit\CoolTermWin64Bit\CoolTerm.exe', os.O_RDONLY)
 time.sleep(5)
-pyautogui.keyDown('ctrl')
-pyautogui.keyDown('k')
-pyautogui.keyUp('k')
-pyautogui.keyUp('ctrl')
+pyautogui.click(200,75)
+time.sleep(2)
+pyautogui.click(200,450)
+time.sleep(2)
+pyautogui.click(600,470)
+time.sleep(2)
+pyautogui.doubleClick(250,320)
+pyautogui.click(200,100)
+# pyautogui.keyDown('ctrl')
+# pyautogui.keyDown('k')
+# pyautogui.keyUp('k')
+# pyautogui.keyUp('ctrl')
 
-time.sleep(10)
+time.sleep(5)
 
 #DataFrame
-f = open(r'C:\Users\salar\Downloads\sketch_feb11a\transducer\CoolTerm_Data.txt')
-df = pd.read_csv(f, header = None, sep = " ", names=  ['time', 'pressure', 'frequency'])
+data1 = []
+with open(r'C:\Users\salar\Downloads\sketch_feb11a\transducer\CoolTerm_Data.txt') as data:
+     for line in data:
+            data = line.split()
+            data = list(map(int,data))
+            data1.append(data)
+            
+df = pd.DataFrame(data1)
+df.columns = ['Time' , 'Pressure','Frequency']
+df.to_csv('data.csv', index = False, header = False )
 print(df)
-df.to_excel('data.excel', index = False)
 
-# graph the plots way 1
-x = []
-y = []
-for line in f: 
-    lines = [i for i in line.split()]
-    x.append(lines[0])
-    y.append(int(lines[1]))
-    
-plt.title("Pressure vs. Frequency")
-plt.xlabel('Pressure')
-plt.ylabel('Frequency')
-plt.yticks(y)
-plt.plot(x, y, marker = 'o', c = 'g')
+# # graph the plots way
+# df.plot(x = 'Pressure', y = 'Frequency', kind = "line", marker = 'o', c='g', figsize = (10,15))
+# df.plot(x = 'Time', y = 'Frequency', kind = "line", marker = 'o', c='g', figsize = (10,15))
+# df.plot(x = 'Time', y = 'Pressure', kind = "line", marker = 'o', c='g', figsize = (15,15))
 
-# graph the plots way 2
-df.plot(x = 'pressure', y = 'frequency', kind = "line", marker = 'o', c='g', figsize = (10,15))
-df.plot(x = 'time', y = 'frequency', kind = "line", marker = 'o', c='g', figsize = (10,15))
-df.plot(x = 'time', y = 'pressure', kind = "line", marker = 'o', c='g', figsize = (10,15))
-
-plt.show() 
+# plt.show() 
 
 
-
-with open("example.txt",'r+') as file:
-    file.truncate(0)
+with open(r'C:\Users\salar\Downloads\sketch_feb11a\transducer\CoolTerm_Data.txt', 'w+') as file:
+    file.seek(0)
