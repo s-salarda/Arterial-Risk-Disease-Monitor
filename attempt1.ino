@@ -1,9 +1,8 @@
 #include "Wire.h" //allows communication over i2c devices
+
 int mic = A0;
-//int x;
-// Variable to hold analog values from mic
 int micOut;
-int time;
+unsigned long prevTime = 0; // Variable to hold the previous timestamp
 
 void setup() {
   Serial.begin(9600);
@@ -15,28 +14,38 @@ void receiveEvent(int numBytes) {
     while (Wire.available() > 0) {
         int receivedChar = Wire.read();
 
-        if (receivedChar > 0) {
+        if (receivedChar < 9) {
           micOut = analogRead(mic);
           float voltage = micOut * (3.3 / 1024.0);
           unsigned long currentTime = millis();
-          time = currentTime/1000;
-          Serial.print(time);
-          Serial.print(", ");
-          Serial.println(receivedChar);
-      // Print the voltage value to the serial monitor
-          //Serial.print("ADC Reading: ");
-          //Serial.print(micOut);
-          //Serial.print(", Voltage: ");
-          //Serial.println(voltage);
+          unsigned long elapsedTime = currentTime - prevTime; // Calculate elapsed time
+          prevTime = currentTime; // Update previous timestamp
+          float samplingFrequency = 1000.0 / elapsedTime;
+          //Serial.print(currentTime);
+          //Serial.print(" ");
+          Serial.print(receivedChar);
+          Serial.print(" ");
+          Serial.print(micOut);
+          Serial.println(); // Calculate sampling frequency in Hz
+          // Serial.print("Sampling Frequency: ");
+          // Serial.print(samplingFrequency);
+          // Serial.print(" Hz, ");
+          // Serial.print("ADC Reading: ");
+          // Serial.print(micOut);
+          // Serial.print(", Voltage: ");
+          // Serial.println(voltage);
         } else {
-          Serial.println("Loading");
+          Serial.print(receivedChar);
+          Serial.print(" ");
+          Serial.println(0);
       }
     }
-    }
+}
 
 void loop() {
-
   // Delay for a short period before taking the next reading
+  delay(100);
+}
   delay(500);
   // print out the value you read:
 
