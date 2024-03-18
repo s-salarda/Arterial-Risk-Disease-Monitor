@@ -2,7 +2,9 @@
 
 int mic = A0;
 int micOut;
-unsigned long prevTime = 0; // Variable to hold the previous timestamp
+int consecutiveCount = 0; // Counter for consecutive receivedChar > 15
+bool printMicOut = false; // Flag to track when to print micOut
+unsigned long prevTime = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -14,37 +16,25 @@ void receiveEvent(int numBytes) {
     while (Wire.available() > 0) {
         int receivedChar = Wire.read();
 
-        if (receivedChar < 9) {
-          micOut = analogRead(mic);
-          float voltage = micOut * (3.3 / 1024.0);
-          unsigned long currentTime = millis();
-          unsigned long elapsedTime = currentTime - prevTime; // Calculate elapsed time
-          prevTime = currentTime; // Update previous timestamp
-          float samplingFrequency = 1000.0 / elapsedTime;
-          //Serial.print(currentTime);
-          //Serial.print(" ");
-          Serial.print(receivedChar);
-          Serial.print(" ");
-          Serial.print(micOut);
-          Serial.println(); // Calculate sampling frequency in Hz
-          // Serial.print("Sampling Frequency: ");
-          // Serial.print(samplingFrequency);
-          // Serial.print(" Hz, ");
-          // Serial.print("ADC Reading: ");
-          // Serial.print(micOut);
-          // Serial.print(", Voltage: ");
-          // Serial.println(voltage);
+        if (receivedChar > 15) {
+          consecutiveCount++; // Increment counter
         } else {
-          Serial.print(receivedChar);
-          Serial.print(" ");
-          Serial.println(0);
-      }
+          consecutiveCount = 0; // Reset counter if receivedChar <= 15
+        }
+      
+        if (consecutiveCount >= 3) {
+          printMicOut = true; // Set the flag to true after three consecutive receivedChar > 15
+        }
+        if (printMicOut) {
+          micOut = analogRead(mic);
+          Serial.println(micOut);
+        } else {
+          Serial.println(0);          
+        }
     }
 }
-
 void loop() {
-  // Delay for a short period before taking the next reading
-  delay(100);
+
 }
   delay(500);
   // print out the value you read:
